@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        #screen {
+            border: 5px solid #CCC;
+            image-rendering: pixelated;
+            image-rendering: crisp-edges;
+            image-rendering: -moz-crisp-edges;
+        }
+
+        .box {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background-color: #fff;
+            width: 100vw;
+            height: 100vh;
+        }
+    </style>
+    <title>MMORPG</title>
+    <script src="/socket.io/socket.io.js"></script>
+</head>
+
+<body>
+
+    <div class="box">
+        <canvas id="screen" width="900" height="540">
+            <!-- 15x9 -->
+        </canvas>
+    </div>
+
+    <script type="module">
+
+        import createGame from './game.js'
+        import createKeyBoardListener from './keyboard-listener.js'
+        import renderScreen from './render-screen.js'
+
+        const screen = document.getElementById("screen")
+
+        const currentPlayer = { id: 'player1', x: 0, y: 0 }
+
+        const game = createGame()
+        const keyBoardListener = createKeyBoardListener()
+
+        const socket = io()
+
+        socket.on('connect', () => {
+            const playerId = socket.id
+            currentPlayer.id = socket.id
+            console.log(`Player connected on Cliente with id: ${playerId}`)
+
+            renderScreen(screen, game, requestAnimationFrame, currentPlayer)
+        })
+
+        socket.on('setup', (state) => {
+            console.log(`Receiving "setup" event from server ()`)
+            console.log(state)
+
+            currentPlayer.x = state.players[currentPlayer.id].x
+            currentPlayer.y = state.players[currentPlayer.id].y
+
+            game.setState(state)
+            keyBoardListener.registerCurrentPlayer(currentPlayer.id)
+            keyBoardListener.subscribe(game.movePlayer)
+            keyBoardListener.subscribe((command) => {
+                socket.emit('move-player', command)
+            })
+        })
+
+        socket.on('add-player', (command) => {
+            console.log(`Receiving ${command.type} ->`)
+            game.addPlayer(command)
+        })
+
+        socket.on('remove-player', (command) => {
+            console.log(`Receiving ${command.type} ->`)
+            game.removePlayer({ id: command.id })
+        })
+
+        socket.on('move-player', (command) => {
+            console.log(`Receiving ${command.type} ->`)
+            const playerId = socket.id
+            if (playerId != command.player)
+                game.movePlayer(command)
+        })
+
+        socket.on('move-monster', (command) => {
+            console.log(`Receiving ${command.type} ->`)
+            game.moveMonster(command)
+        })
+
+    </script>
+
+</body>
+
+</html>
