@@ -6,6 +6,7 @@
 import express from 'express'
 import http from 'http'
 import createGame from './public/game.js'
+import playerFunction from './public/player.js'
 
 import { Server } from "socket.io"
 
@@ -28,7 +29,7 @@ sockets.on('connection', (socket) => {
     const playerId = socket.id
     console.log(`=> Player connected on Server with id: ${playerId}`)
 
-    game.addPlayer({ id: playerId, x: 0, y: 0, name: "Gabriel", maxLife: 100, currentLife: 20 })
+    game.createPlayer({ id: playerId, x: 0, y: 0, name: `Jogador`, maxLife: 100, currentLife: 20 })
 
     socket.emit('setup', game.state)
 

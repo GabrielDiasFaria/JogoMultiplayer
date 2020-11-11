@@ -65,6 +65,11 @@ export default function renderScreen(screen, game, requestAnimationFrame, curren
             (player.currentLife * game.global.fixedSizeX) / player.maxLife,
             5
         )
+
+        // Draw Player Name
+        context.fillStyle = 'black'
+        context.font = "12px Arial";
+        context.fillText(player.name, newPositionX, newPositionY - 10);
     }
 
     for (const monsterId in game.state.monsters) {
@@ -96,6 +101,11 @@ export default function renderScreen(screen, game, requestAnimationFrame, curren
             (monster.currentLife * game.global.fixedSizeX) / monster.maxLife,
             5
         )
+
+        // Draw Monster Name
+        context.fillStyle = 'black'
+        context.font = "12px Arial";
+        context.fillText(monster.name, newPositionX, newPositionY - 10);
     }
 
     for (const tileId in game.state.tilesLayer2) {

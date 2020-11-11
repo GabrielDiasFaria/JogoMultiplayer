@@ -35,9 +35,18 @@ export default function createGame() {
     const observers = []
 
     function startGame() {
-        addMonster({ id: "moster1", x: 60, y: 0, name: "Monstro 1", maxLife: 100, currentLife: 20 })
         const monsterFunc = monsterFunction(state, notifyMonster)
-        monsterFunc.startMonster("moster1")
+
+        monsterFunc.attibutes.id = "Monster1"
+        monsterFunc.attibutes.x = 0
+        monsterFunc.attibutes.y = 60
+        monsterFunc.attibutes.name = "Monster1"
+        monsterFunc.attibutes.maxLife = 100
+        monsterFunc.attibutes.currentLife = 100
+
+        addMonster(monsterFunc.attibutes)
+
+        monsterFunc.startMonster()
     }
 
     function subscribe(observerFunction) {
@@ -56,10 +65,32 @@ export default function createGame() {
         Object.assign(state, newState)
     }
 
+    function createPlayer(command) {
+        const playerFunc = playerFunction(state, global, notifyPlayer)
+
+        playerFunc.attibutes.id = command.id
+        playerFunc.attibutes.x = command.x
+        playerFunc.attibutes.y = command.y
+        playerFunc.attibutes.name = command.name
+        playerFunc.attibutes.maxLife = command.maxLife
+        playerFunc.attibutes.currentLife = command.currentLife
+
+        playerFunc.startPlayer()
+
+        addPlayer(playerFunc.attibutes)
+    }
+
+    function healPlayer(command) {
+
+    }
+
     function addPlayer(command) {
         state.players[command.id] = {
             x: command.x,
-            y: command.y
+            y: command.y,
+            name: command.name,
+            maxLife: command.maxLife,
+            currentLife: command.currentLife
         }
 
         notifyAll({
@@ -90,7 +121,10 @@ export default function createGame() {
     function addMonster(command) {
         state.monsters[command.id] = {
             x: command.x,
-            y: command.y
+            y: command.y,
+            name: command.name,
+            maxLife: command.maxLife,
+            currentLife: command.currentLife
         }
 
         notifyAll({
@@ -113,6 +147,9 @@ export default function createGame() {
     function moveMonster(command) {
         const monsterFunc = monsterFunction(state, global)
 
+        monsterFunc.attibutes.x = command.x
+        monsterFunc.attibutes.y = command.y
+
         monsterFunc.moveMonster(command)
     }
 
@@ -120,8 +157,13 @@ export default function createGame() {
         notifyAll(command)
     }
 
+    function notifyPlayer(command) {
+        notifyAll(command)
+    }
+
     return {
         startGame,
+        createPlayer,
         addPlayer,
         removePlayer,
         movePlayer,
@@ -131,6 +173,7 @@ export default function createGame() {
         state,
         global,
         setState,
-        subscribe
+        subscribe,
+        healPlayer
     }
 }

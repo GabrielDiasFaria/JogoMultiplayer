@@ -99,6 +99,11 @@
             game.moveMonster(command)
         })
 
+        socket.on('heal-player', (command) => {
+            console.log(`Receiving ${command.type} ->`)
+            game.healPlayer(command)
+        })
+
     </script>
 
 </body>

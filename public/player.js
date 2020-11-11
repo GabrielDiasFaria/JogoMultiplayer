@@ -1,4 +1,32 @@
-export default function playerFunction(state, global) {
+export default function playerFunction(state, global, notifyPlayer) {
+
+    const attibutes = {
+        id: 0,
+        speed: 60,
+        name: null,
+        maxLife: 0,
+        currentLife: 0,
+        x: 0,
+        y: 0,
+        nextPlayerDistanceToAttack: 60 * 4
+    }
+
+    function startPlayer() {
+        const interval = 1000
+
+        setInterval(() => {
+            healPlayer(10)
+        }, interval);
+    }
+
+    function healPlayer(value) {
+        const player = state.players[attibutes.id]
+        if (value + attibutes.currentLife < attibutes.maxLife) {
+            player.currentLife += value
+            attibutes.currentLife += value
+            notifyPlayer({ type: "heal-player", player: attibutes.id, valueAdd: value })
+        }
+    }
 
     function movePlayer(command) {
         const acceptedMoves = {
@@ -90,6 +118,8 @@ export default function playerFunction(state, global) {
 
 
     return {
-        movePlayer
+        attibutes,
+        movePlayer,
+        startPlayer
     }
 }
